@@ -48,7 +48,7 @@ public class Productos {
         @Column(length = 70)
         private String procesador;
 
-        @Column(length = 20)
+        @Column(length = 30)
         private String memoria_ram;
 
         @Column(length = 20)
