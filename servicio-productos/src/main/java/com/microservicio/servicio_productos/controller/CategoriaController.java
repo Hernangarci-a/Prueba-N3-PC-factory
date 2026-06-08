@@ -18,6 +18,8 @@ import com.microservicio.servicio_productos.dto.CategoriaDTO;
 import com.microservicio.servicio_productos.model.Categoria;
 import com.microservicio.servicio_productos.services.CategoriaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/categoria")
 public class CategoriaController {
@@ -48,7 +50,7 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> agregarCategoria(@RequestBody Categoria categoria) {
+    public ResponseEntity<?> agregarCategoria(@Valid @RequestBody Categoria categoria) {
         try {
             Categoria guardado = categoriaService.guardarCategoria(categoria);
             // retorna el producto guardado con el estado 201 creado
@@ -56,12 +58,13 @@ public class CategoriaController {
         } catch (Exception e) {
             // si algo falla en las validacion se retorna un estado 400 bad_request
             // solicitud incorrecta
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{idCategoria}/productos/{idProductos}")
-    public ResponseEntity<?> reclutarHeroe(@PathVariable Integer idCategoria, @PathVariable Integer idProductos) {
+    public ResponseEntity<?> reclutarHeroe(@Valid @PathVariable Integer idCategoria,
+            @PathVariable Integer idProductos) {
         try {
             Categoria resultado = categoriaService.añadirProductoACategoria(idCategoria, idProductos);
             return new ResponseEntity<>(resultado, HttpStatus.OK);

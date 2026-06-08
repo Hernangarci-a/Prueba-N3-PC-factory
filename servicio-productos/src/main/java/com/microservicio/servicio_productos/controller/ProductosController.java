@@ -19,6 +19,8 @@ import com.microservicio.servicio_productos.dto.ProductosDTO;
 import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.services.ProductosService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/productos")
 public class ProductosController {
@@ -49,7 +51,7 @@ public class ProductosController {
     }
 
     @PostMapping
-    public ResponseEntity<Productos> agregarProductos(@RequestBody Productos producto) {
+    public ResponseEntity<?> agregarProductos(@Valid @RequestBody Productos producto) {
         try {
             Productos guardado = productosService.guardarProductos(producto);
             // retorna el producto guardado con el estado 201 creado
@@ -57,7 +59,7 @@ public class ProductosController {
         } catch (Exception e) {
             // si algo falla en las validacion se retorna un estado 400 bad_request
             // solicitud incorrecta
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
         }
     }
 

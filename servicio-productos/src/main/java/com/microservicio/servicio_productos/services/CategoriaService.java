@@ -22,7 +22,7 @@ public class CategoriaService {
     private CategoriaRepository categoriaRepository;
 
     @Autowired
-    private ProductosService productosRepository;
+    private ProductosService productosService;
 
     // para obtener todos los productos de las base de datos
     public List<CategoriaDTO> obtenerTodos() {
@@ -33,7 +33,7 @@ public class CategoriaService {
 
     public CategoriaDTO buscarPorId(Integer idCategoria) {
         Categoria categoria = categoriaRepository.findById(idCategoria)
-                .orElseThrow(() -> new RuntimeException("producto no encontrado"));
+                .orElseThrow(() -> new RuntimeException("categoria no encontrada"));
         return convertirADTO(categoria);
     }
 
@@ -48,7 +48,7 @@ public class CategoriaService {
 
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
-        Productos producto = productosRepository.buscarProducto(idProductos);
+        Productos producto = productosService.buscarProducto(idProductos);
         categoria.getProductos().add(producto);
         return categoriaRepository.save(categoria);
     }
@@ -57,7 +57,7 @@ public class CategoriaService {
         CategoriaDTO dto = new CategoriaDTO();
         // copiamos los atributos simples (los que son texto o números directos)
         dto.setIdCategoria(categoria.getIdCategoria());
-        dto.setNombrCategoria(categoria.getNombreCategoria());
+        dto.setNombreCategoria(categoria.getNombreCategoria());
 
         if (categoria.getProductos() != null) {
             dto.setNombresProductos(categoria.getProductos().stream().map(Productos::getNombreProducto)

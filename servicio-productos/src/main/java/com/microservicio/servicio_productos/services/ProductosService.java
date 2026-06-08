@@ -45,10 +45,10 @@ public class ProductosService {
         ProductosDTO dto = new ProductosDTO();
         // copiamos los atributos simples (los que son texto o números directos)
         dto.setIdProducto(producto.getIdProductos());
-        dto.setNombre_producto(producto.getNombreProducto());
+        dto.setNombreProducto(producto.getNombreProducto());
         dto.setPrecioUnitario(producto.getPrecioUnitario());
         dto.setProcesador(producto.getProcesador());
-        dto.setMemoria_ram(producto.getMemoria_ram());
+        dto.setMemoriaRam(producto.getMemoriaRam());
         dto.setAlmacenamiento(producto.getAlmacenamiento());
 
         // manejo de Tipo de Producto relación manytoone
@@ -56,7 +56,7 @@ public class ProductosService {
         // osea Preguntamos si el producto tiene un tipo por ejemplo un Mouse
         if (producto.getTipoProducto() != null) {
             // si existe entramos al objeto TipoProducto y sacamos solo el nombre
-            dto.setNombreTipoProducto(producto.getTipoProducto().getNombreTipoProducto());
+            dto.setNombreTipoProducto(producto.getTipoProducto().getNombreTipoProducto().trim());
         } else {
             // si es nulo, ponemos un mensaje en lugar de un error
             dto.setNombreTipoProducto("producto no tiene un tipo definido");
@@ -65,7 +65,7 @@ public class ProductosService {
         // manejo de Marca relacion manytoone
         if (producto.getMarca() != null) {
             // saco el nombre de la marca desde el objeto relacionado
-            dto.setNombreMarca(producto.getMarca().getNombre_marca());
+            dto.setNombreMarca(producto.getMarca().getNombreMarca().trim());
         } else {
             dto.setNombreMarca("no hay marca para este producto");
         }
@@ -135,8 +135,8 @@ public class ProductosService {
         // solo se cambia lo que el usuario mandó
         // si el nombre no viene vacío, actualizamos el original con el dato nuevo
         if (producto.getNombreProducto() != null) {
-            if (producto.getNombreProducto().trim().length() <= 25) {
-                throw new RuntimeException("El nuevo nombre es muy corto, debe tener al menos 25 caracteres.");
+            if (producto.getNombreProducto().trim().length() <= 3) {
+                throw new RuntimeException("El nuevo nombre es muy corto, debe tener mas de 3 caracteres.");
             }
             producto1.setNombreProducto(producto.getNombreProducto());
         }
@@ -151,8 +151,8 @@ public class ProductosService {
         if (producto.getProcesador() != null) {
             producto1.setProcesador(producto.getProcesador());
         }
-        if (producto.getMemoria_ram() != null) {
-            producto1.setMemoria_ram(producto.getMemoria_ram());
+        if (producto.getMemoriaRam() != null) {
+            producto1.setMemoriaRam(producto.getMemoriaRam());
         }
         if (producto.getAlmacenamiento() != null) {
             producto1.setAlmacenamiento(producto.getAlmacenamiento());

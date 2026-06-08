@@ -27,12 +27,13 @@ public class Marca {
 
     @Id // Define la llave primaria
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Indica que es AUTO_INCREMENT en MySQL
-    private Integer id;
+    @Column(name = "idMarca") // Le dices a JPA el nombre exacto del SQL
+    private Integer idMarca;
 
     @NotBlank(message = "El nombre de la marca es obligatorio")
     @Size(min = 3, max = 20, message = "El nombre de la marca debe tener entre 3 y 20 caracteres")
-    @Column(nullable = false, length = 25)
-    private String nombre_marca;
+    @Column(name = "nombreMarca", nullable = false, length = 25)
+    private String nombreMarca;
 
     @OneToMany(mappedBy = "marca")
     private List<Productos> productos;

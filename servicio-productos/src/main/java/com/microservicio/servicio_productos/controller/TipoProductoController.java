@@ -18,6 +18,8 @@ import com.microservicio.servicio_productos.dto.TipoProductoDTO;
 import com.microservicio.servicio_productos.model.TipoProducto;
 import com.microservicio.servicio_productos.services.TipoProductoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/tipoproducto")
 public class TipoProductoController {
@@ -48,7 +50,7 @@ public class TipoProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<TipoProducto> agregarCategoria(@RequestBody TipoProducto tipoProducto) {
+    public ResponseEntity<?> agregarCategoria(@Valid @RequestBody TipoProducto tipoProducto) {
         try {
             TipoProducto guardado = tipoProductoService.guardarTipoProducto(tipoProducto);
             // retorna el producto guardado con el estado 201 creado
@@ -56,12 +58,12 @@ public class TipoProductoController {
         } catch (Exception e) {
             // si algo falla en las validacion se retorna un estado 400 bad_request
             // solicitud incorrecta
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{IdTipoProducto}/heroe/{idProductos}")
-    public ResponseEntity<String> reclutarHeroe(@PathVariable Integer idTipoProducto,
+    public ResponseEntity<String> reclutarHeroe(@Valid @PathVariable Integer idTipoProducto,
             @PathVariable Integer idProductos) {
         try {
             String resultado = tipoProductoService.añadirTipoProductoAproductos(idTipoProducto, idProductos);
@@ -74,7 +76,7 @@ public class TipoProductoController {
     @DeleteMapping("/{idTipoProducto}")
     public ResponseEntity<?> deleteTipoProducto(@PathVariable Integer idTipoProducto) {
         try {
-            String resultado = tipoProductoService.eliminarProductos(idTipoProducto);
+            String resultado = tipoProductoService.eliminarTipoProdcucto(idTipoProducto);
             return new ResponseEntity<>(resultado, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

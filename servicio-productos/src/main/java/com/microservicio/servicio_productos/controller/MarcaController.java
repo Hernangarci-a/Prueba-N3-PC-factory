@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.microservicio.servicio_productos.model.Marca;
 import com.microservicio.servicio_productos.services.MarcaService;
 
+import jakarta.validation.Valid;
+
 @RequestMapping("api/v1/marca")
 @RestController
 public class MarcaController {
@@ -29,12 +31,12 @@ public class MarcaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> agregarMarca(@RequestBody Marca m) {
+    public ResponseEntity<?> agregarMarca(@Valid @RequestBody Marca m) {
         try {
             return new ResponseEntity<>("Marca guardada correctamente" + marcaService.guardarMarca(m),
                     HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("ERROR", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
         }
     }
 
