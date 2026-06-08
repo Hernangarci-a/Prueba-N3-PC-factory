@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class Region {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_region;
 
-    @NotNull(message = "El nombre de la region no puede estar vacio")
+    @NotBlank(message = "El nombre de la region no puede estar vacio")
     @Column(nullable = false, name = "nombre_region")
     private String nombre_region;
 
