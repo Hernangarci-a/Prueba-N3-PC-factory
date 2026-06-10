@@ -19,7 +19,9 @@ import com.microservicio.servicio_productos.model.Categoria;
 import com.microservicio.servicio_productos.services.CategoriaService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/categoria")
 public class CategoriaController {
@@ -28,10 +30,12 @@ public class CategoriaController {
     private CategoriaService categoriaService;
 
     @GetMapping
-    public ResponseEntity<List<CategoriaDTO>> todosLosProductos() {
+    public ResponseEntity<List<CategoriaDTO>> todosLasCategorias() {
+        log.info("metodo GET Listar todas las categorías ");
         List<CategoriaDTO> categorias = categoriaService.obtenerTodos();
         // si la lista está vacía devuelve un estado 204 No Content
         if (categorias.isEmpty()) {
+            log.info("respuesta 204 No Contentenido No hay categorías registradas que mostrar");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         // si hay datos devuelve la lista con un estado 200 OK
@@ -40,10 +44,12 @@ public class CategoriaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaDTO> buscarPorId(@PathVariable Integer id) {
+        log.info("metodo GET Buscar categoría por ID: {}", id);
         try {
             CategoriaDTO categ = categoriaService.buscarPorId(id);
             return new ResponseEntity<>(categ, HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.error("Respuesta 404 not found el producto no fue encontrado: {}", e.getMessage());
             // Si el service lanza la excepción del producto no encontrado
             return ResponseEntity.notFound().build();
         }
@@ -51,37 +57,44 @@ public class CategoriaController {
 
     @PostMapping
     public ResponseEntity<?> agregarCategoria(@Valid @RequestBody Categoria categoria) {
+        log.info("Petición POST guardar nueva categoría");
         try {
             Categoria guardado = categoriaService.guardarCategoria(categoria);
+            log.info("metodo 201 Creado Categoría registrada con ID: {}", guardado.getIdCategoria());
             // retorna el producto guardado con el estado 201 creado
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
             // si algo falla en las validacion se retorna un estado 400 bad_request
             // solicitud incorrecta
+            log.error("Respuesta 400 Bad Request fallo alguna validacion: {}", e.getMessage());
             return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{idCategoria}/productos/{idProductos}")
-    public ResponseEntity<?> reclutarHeroe(@Valid @PathVariable Integer idCategoria,
+    public ResponseEntity<?> añadirPrductoUnaCtegortia(@Valid @PathVariable Integer idCategoria,
             @PathVariable Integer idProductos) {
+        log.info("metodo PUT añadiendo producto: {} a categoria: {}", idCategoria,
+                idProductos);
         try {
             Categoria resultado = categoriaService.añadirProductoACategoria(idCategoria, idProductos);
             return new ResponseEntity<>(resultado, HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.error("Respuesta 404 Not Found no se pudo anadir producto a categoria{}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCategoria(@PathVariable Integer id) {
-        String resultado = categoriaService.eliminarCategoria(id);
-
-        // Si el mensaje contiene exitosamente es un éxito
-        if (resultado.contains("exitosamente")) {
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(resultado, HttpStatus.NOT_FOUND);
+        log.info("metodo DELETE eliminacion de categoria: {}", id);
+        try {
+            categoriaService.eliminarCategoria(id);
+            log.info("Respuesta 200 OK Categoría ID: {} eliminada con éxito", id);
+            return new ResponseEntity<>("La categoría con ID " + id + " ha sido retirada exitosamente.", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.error("Respuesta 404 Not Found eliminacion fallida: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

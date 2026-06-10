@@ -43,6 +43,15 @@ public class MarcaService {
             Marca marca = marcaRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException(
                             "no se puede eliminar la marca con el ID " + id + " no existe."));
+
+            // condicional que valida si tiene productos asociados para que no lo pueda
+            // borrar por logica un podructo no se puede eliminar si tiene un producto
+            // asociado
+            if (marca.getProductos() != null && !marca.getProductos().isEmpty()) {
+                throw new RuntimeException("No se puede eliminar la marca '" + marca.getNombreMarca()
+                        + "' porque tiene productos asociados en el catálogo.");
+            }
+
             marcaRepository.delete(marca);
             return "la marca " + marca.getNombreMarca() + " se elimino";
         } catch (RuntimeException e) {

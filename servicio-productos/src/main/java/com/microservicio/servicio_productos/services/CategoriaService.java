@@ -13,9 +13,11 @@ import com.microservicio.servicio_productos.repository.CategoriaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class CategoriaService {
 
     @Autowired
@@ -26,12 +28,14 @@ public class CategoriaService {
 
     // para obtener todos los productos de las base de datos
     public List<CategoriaDTO> obtenerTodos() {
+        log.info("buscando el listado completo de categorías ");
         return categoriaRepository.findAll().stream()
                 .map(this::convertirADTO)
                 .toList();
     }
 
     public CategoriaDTO buscarPorId(Integer idCategoria) {
+        log.info("Buscando categoría con ID: {}", idCategoria);
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new RuntimeException("categoria no encontrada"));
         return convertirADTO(categoria);
@@ -39,12 +43,15 @@ public class CategoriaService {
 
     public Categoria guardarCategoria(Categoria categoria) {
         if (categoria.getNombreCategoria() == null || categoria.getNombreCategoria().trim().isEmpty()) {
+            log.warn("Intento fallido de guardar categoría El nombre está vacío.");
             throw new RuntimeException("Error el nombre no puede estar vacio");
         }
+        log.info("Guardando nueva categoría: '{}'", categoria.getNombreCategoria());
         return categoriaRepository.save(categoria);
     }
 
     public Categoria añadirProductoACategoria(Integer idCategoria, Integer idProductos) {
+        log.info("Asociando producto ID {} a la categoría ID {}", idProductos, idCategoria);
 
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
@@ -70,6 +77,7 @@ public class CategoriaService {
     }
 
     public String eliminarCategoria(Integer id) {
+        log.info("Iniciando eliminación para la categoría ID: {}", id);
         try {
             Categoria categoria = categoriaRepository.findById(id).orElseThrow(
                     () -> new RuntimeException("¡Imposible eliminar! El producto con ID " + id + " no existe."));

@@ -28,7 +28,7 @@ public class TipoProductoController {
     private TipoProductoService tipoProductoService;
 
     @GetMapping
-    public ResponseEntity<List<TipoProductoDTO>> todosLosProductos() {
+    public ResponseEntity<List<TipoProductoDTO>> todosLosTipos() {
         List<TipoProductoDTO> tipoPoducto = tipoProductoService.obtenerTodos();
         // si la lista está vacía devuelve un estado 204 No Content
         if (tipoPoducto.isEmpty()) {
@@ -62,8 +62,8 @@ public class TipoProductoController {
         }
     }
 
-    @PutMapping("/{IdTipoProducto}/heroe/{idProductos}")
-    public ResponseEntity<String> reclutarHeroe(@Valid @PathVariable Integer idTipoProducto,
+    @PutMapping("/{IdTipoProducto}/producto/{idProductos}")
+    public ResponseEntity<String> reclutarTipoProductoUnProducto(@Valid @PathVariable Integer idTipoProducto,
             @PathVariable Integer idProductos) {
         try {
             String resultado = tipoProductoService.añadirTipoProductoAproductos(idTipoProducto, idProductos);

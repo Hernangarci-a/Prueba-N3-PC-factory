@@ -20,7 +20,9 @@ import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.services.ProductosService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/productos")
 public class ProductosController {
@@ -30,9 +32,11 @@ public class ProductosController {
 
     @GetMapping
     public ResponseEntity<List<ProductosDTO>> todosLosProductos() {
+        log.info("metodo GET listar todos los productos");
         List<ProductosDTO> productos = productosService.obtenerTodos();
         // si la lista está vacía devuelve un estado 204 No Content
         if (productos.isEmpty()) {
+            log.info("respuesta 204 no hay productos registrados para mostrar");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         // si hay datos devuelve la lista con un estado 200 OK
@@ -41,6 +45,7 @@ public class ProductosController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductosDTO> buscarPorId(@PathVariable Integer id) {
+        log.info("buscando productos por id {}", id);
         try {
             ProductosDTO product = productosService.buscarPorId(id);
             return new ResponseEntity<>(product, HttpStatus.OK);
@@ -64,7 +69,7 @@ public class ProductosController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Productos> editarHeroe(@PathVariable Integer id, @RequestBody Productos product) {
+    public ResponseEntity<Productos> editarProdcutos(@PathVariable Integer id, @RequestBody Productos product) {
         try {
             Productos editado = productosService.guardarProductos(product);
             return new ResponseEntity<>(editado, HttpStatus.OK);

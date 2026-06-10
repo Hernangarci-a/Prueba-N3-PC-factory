@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import com.microservicio.servicio_productos.dto.ProductosDTO;
@@ -12,6 +13,7 @@ import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.repository.ProductosRepository;
 
 import jakarta.transaction.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 @Transactional
@@ -135,10 +137,15 @@ public class ProductosService {
         // solo se cambia lo que el usuario mandó
         // si el nombre no viene vacío, actualizamos el original con el dato nuevo
         if (producto.getNombreProducto() != null) {
-            if (producto.getNombreProducto().trim().length() <= 3) {
-                throw new RuntimeException("El nuevo nombre es muy corto, debe tener mas de 3 caracteres.");
+            // Primero limpiamos el texto de espacios extras y lo guardamos en una variable
+            String nombreSinEspacios = producto.getNombreProducto().trim();
+            // se valida usando la variable que ya está sin espacios que debe ser mayor a 3
+            // caracteres
+            if (nombreSinEspacios.length() < 3) {
+                throw new RuntimeException("El nuevo nombre es muy corto, debe tener mas 3 caracteres");
             }
-            producto1.setNombreProducto(producto.getNombreProducto());
+            // aqui se guarda la variable sin sin espacios
+            producto1.setNombreProducto(nombreSinEspacios);
         }
         // manejo del primitivo 'double'
         // como no puede ser null verificamos que no sea 0.0 es double
@@ -161,4 +168,29 @@ public class ProductosService {
         return productosRepository.save(producto1);
     }
 
+    /*
+     * private JediDTO convertirADTO(Jedi jedi) {
+     * JediDTO dto = new JediDTO();
+     * dto.setId(jedi.getId());
+     * dto.setNombre(jedi.getNombre());
+     * dto.setMidiclorianos(jedi.getMidiclorianos());
+     * 
+     * try {
+     * SableExternoDTO sableRecuperado = webClientBuilder.build()
+     * .get()
+     * .uri("http://localhost:8082/api/v1/sables/buscar-por-jedi/" + jedi.getId())
+     * .retrieve()
+     * .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) //
+     * importante
+     * .bodyToMono(SableExternoDTO.class)
+     * .block();
+     * 
+     * dto.setSable(sableRecuperado);
+     * 
+     * } catch (Exception e) {
+     * dto.setSable(null);
+     * }
+     * return dto;
+     * }
+     */
 }

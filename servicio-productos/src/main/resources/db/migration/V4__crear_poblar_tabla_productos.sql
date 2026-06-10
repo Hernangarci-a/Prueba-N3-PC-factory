@@ -12,6 +12,6 @@ CREATE TABLE productos (
 );
 
 INSERT INTO productos (idProductos, nombreProducto, precioUnitario, procesador, memoriaRam, almacenamiento, marca_id, tipo_producto_id) VALUES 
-(1, 'MacBook Air M2 Apple', 999990.00, 'Apple M2', '8GB', '256GB SSD', 1, 1),
-(2, 'Notebook Gamer ASUS TUF A15', 749990.00, 'AMD Ryzen 7', '16GB', '512GB SSD', 5, 1),
-(3, 'Tarjeta Video ASUS Dual RTX 4060', 349990.00, 'NVIDIA RTX 4060', '8GB GDDR6', NULL, 5, 2);
+(1, "MacBook Air M2 Apple", 999990.00, "Apple M2", "8GB", "256GB SSD", 1, 1),
+(2, "Notebook Gamer ASUS TUF A15", 749990.00, "AMD Ryzen 7", "16GB", "512GB SSD", 5, 1),
+(3, "Tarjeta Video ASUS Dual RTX 4060", 349990.00, "NVIDIA RTX 4060", "8GB GDDR6", NULL, 5, 2);
