@@ -85,6 +85,23 @@ public class ProductosService {
             dto.setNombresCategorias(new ArrayList<>());
         }
 
+        /*
+         * try {
+         * VentasDTO ventasRecuperado = webClientBuilder.build()
+         * .get()
+         * .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
+         * .retrieve()
+         * .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) //
+         * importante
+         * .bodyToMono(VentasDTO.class)
+         * .block();
+         * 
+         * dto.setVentas(ventasRecuperado);
+         * 
+         * } catch (Exception e) {
+         * dto.setVentas(null);
+         * }
+         */
         // y aca se entrega DTO ya armado con toda la información filtrada caja
         // terminada
         return dto;
@@ -167,30 +184,4 @@ public class ProductosService {
         // guarda el original los cambios del original que ya existe
         return productosRepository.save(producto1);
     }
-
-    /*
-     * private JediDTO convertirADTO(Jedi jedi) {
-     * JediDTO dto = new JediDTO();
-     * dto.setId(jedi.getId());
-     * dto.setNombre(jedi.getNombre());
-     * dto.setMidiclorianos(jedi.getMidiclorianos());
-     * 
-     * try {
-     * SableExternoDTO sableRecuperado = webClientBuilder.build()
-     * .get()
-     * .uri("http://localhost:8082/api/v1/sables/buscar-por-jedi/" + jedi.getId())
-     * .retrieve()
-     * .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) //
-     * importante
-     * .bodyToMono(SableExternoDTO.class)
-     * .block();
-     * 
-     * dto.setSable(sableRecuperado);
-     * 
-     * } catch (Exception e) {
-     * dto.setSable(null);
-     * }
-     * return dto;
-     * }
-     */
 }

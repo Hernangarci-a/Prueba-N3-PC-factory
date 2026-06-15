@@ -30,44 +30,44 @@ import lombok.NoArgsConstructor;
 @Table(name = "productos") // Indica el nombre exacto de la tabla en MySQL
 public class Productos {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "idProductos")
-        private Integer idProductos;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idProductos")
+    private Integer idProductos;
 
-        @NotBlank(message = "El nombre es obligatorio") // Validación de Java no puede ser nulo ni estar vacío
-        @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres") // Límite de caracteres
-        @Column(name = "nombreProducto", nullable = false, length = 100) // Esto es lo mismo que NOT NULL y VARCHAR(25)
-                                                                         // en la base de
-        // datos
-        private String nombreProducto;
+    @NotBlank(message = "El nombre es obligatorio") // Validación de Java no puede ser nulo ni estar vacío
+    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres") // Límite de caracteres
+    @Column(name = "nombreProducto", nullable = false, length = 100) // Esto es lo mismo que NOT NULL y VARCHAR(25)
+                                                                     // en la base de
+    // datos
+    private String nombreProducto;
 
-        @NotNull(message = "El precio no puede estar vacio")
-        @Positive(message = "El precio debe ser mayor a cero")
-        @Column(name = "precioUnitario", nullable = false)
-        private double precioUnitario;
+    @NotNull(message = "El precio no puede estar vacio")
+    @Positive(message = "El precio debe ser mayor a cero")
+    @Column(name = "precioUnitario", nullable = false)
+    private double precioUnitario;
 
-        @Column(name = "procesador", length = 70, nullable = true)
-        private String procesador;
+    @Column(name = "procesador", length = 70, nullable = true)
+    private String procesador;
 
-        @Column(name = "memoriaRam", length = 30, nullable = true)
-        private String memoriaRam;
+    @Column(name = "memoriaRam", length = 30, nullable = true)
+    private String memoriaRam;
 
-        @Column(name = "almacenamiento", length = 20, nullable = true)
-        private String almacenamiento;
+    @Column(name = "almacenamiento", length = 20, nullable = true)
+    private String almacenamiento;
 
-        @ManyToMany
-        @JoinTable(name = "categoria_productos", // El nombre que definido en el modelo
-                        joinColumns = @JoinColumn(name = "producto_id"), // Llave de esta tabla
-                        inverseJoinColumns = @JoinColumn(name = "categoria_id")) // Llave de la otra tabla
-        private List<Categoria> categorias; // Ahora es una lista porque puede tener muchas categorias
+    @ManyToMany
+    @JoinTable(name = "categoria_productos", // El nombre que definido en el modelo
+            joinColumns = @JoinColumn(name = "producto_id"), // Llave de esta tabla
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")) // Llave de la otra tabla
+    private List<Categoria> categorias; // Ahora es una lista porque puede tener muchas categorias
 
-        @ManyToOne
-        @JoinColumn(name = "tipo_producto_id")
-        private TipoProducto tipoProducto;
+    @ManyToOne
+    @JoinColumn(name = "tipo_producto_id")
+    private TipoProducto tipoProducto;
 
-        @ManyToOne
-        @JoinColumn(name = "marca_id")
-        private Marca marca;
+    @ManyToOne
+    @JoinColumn(name = "marca_id")
+    private Marca marca;
 
 }
