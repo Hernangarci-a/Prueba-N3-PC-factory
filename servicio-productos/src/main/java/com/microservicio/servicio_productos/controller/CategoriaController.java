@@ -38,18 +38,20 @@ public class CategoriaController {
             log.info("respuesta 204 No Contentenido No hay categorías registradas que mostrar");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        log.info("respuesta 200 OK devuelve la lisa de categorias");
         // si hay datos devuelve la lista con un estado 200 OK
         return new ResponseEntity<>(categorias, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaDTO> buscarPorId(@PathVariable Integer id) {
-        log.info("metodo GET Buscar categoría por ID: {}", id);
+        log.info("Buscar categoría por ID: {}", id);
         try {
             CategoriaDTO categ = categoriaService.buscarPorId(id);
+            log.info("Respuesta 200 OK categoria encrotrada con el id:", id);
             return new ResponseEntity<>(categ, HttpStatus.OK);
         } catch (RuntimeException e) {
-            log.error("Respuesta 404 not found el producto no fue encontrado: {}", e.getMessage());
+            log.error("Respuesta 404 not found el categoria no fue encontrada: {}", e.getMessage());
             // Si el service lanza la excepción del producto no encontrado
             return ResponseEntity.notFound().build();
         }
@@ -78,6 +80,7 @@ public class CategoriaController {
                 idProductos);
         try {
             Categoria resultado = categoriaService.añadirProductoACategoria(idCategoria, idProductos);
+            log.info("Repuesta 200 OK se a podido añadir producto a una categoria con exito");
             return new ResponseEntity<>(resultado, HttpStatus.OK);
         } catch (RuntimeException e) {
             log.error("Respuesta 404 Not Found no se pudo anadir producto a categoria{}", e.getMessage());

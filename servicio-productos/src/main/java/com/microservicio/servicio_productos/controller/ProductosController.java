@@ -39,6 +39,7 @@ public class ProductosController {
             log.info("respuesta 204 no hay productos registrados para mostrar");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        log.info("respuesta 200 OK devuelve la lisa de productos");
         // si hay datos devuelve la lista con un estado 200 OK
         return new ResponseEntity<>(productos, HttpStatus.OK);
     }
@@ -50,6 +51,7 @@ public class ProductosController {
             ProductosDTO product = productosService.buscarPorId(id);
             return new ResponseEntity<>(product, HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.error("respuesta 404 not found no se qncontro el producto: {}", e.getMessage());
             // Si el service lanza la excepción del producto no encontrado
             return ResponseEntity.notFound().build();
         }
@@ -57,11 +59,13 @@ public class ProductosController {
 
     @PostMapping
     public ResponseEntity<?> agregarProductos(@Valid @RequestBody Productos producto) {
+        log.info("agregando productos: ");
         try {
             Productos guardado = productosService.guardarProductos(producto);
             // retorna el producto guardado con el estado 201 creado
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
+            log.error("error 400 bad request no fueron respetadas las validaciones: {}", e.getMessage());
             // si algo falla en las validacion se retorna un estado 400 bad_request
             // solicitud incorrecta
             return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
@@ -70,10 +74,13 @@ public class ProductosController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Productos> editarProdcutos(@PathVariable Integer id, @RequestBody Productos product) {
+        log.info("editando los datos de un producto");
         try {
             Productos editado = productosService.guardarProductos(product);
+            log.info("respuesta 200 OK solicitud de guardado de productos exitoso");
             return new ResponseEntity<>(editado, HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.error("Respuesta 404 Not Found no se pudo editar los datos de productos: {}", e.getMessage());
             // si el service da un error por que el id no existe devuelve un estado 404
             // not_found no encontrado
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -82,22 +89,28 @@ public class ProductosController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Productos> actualizarProductos(@PathVariable Integer id, @RequestBody Productos product) {
+        log.info("Metodo PUT editado o actualizado de datos de productos");
         try {
             Productos nuevoProducto = productosService.actualizarProductos(id, product);
+            log.info("Respuesta 200 OK solisitud de editado a productos exitosamente");
             return new ResponseEntity<>(nuevoProducto, HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            log.error("Respuesta 400 bad request fallo de alguna validacion no se pudo editar productos: {}",
+                    e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarProductos(@PathVariable Integer id) {
+        log.info("metodo DELETE eliminacion de un producto: {}", id);
         String resultado = productosService.eliminarProductos(id);
-
+        log.info("Respuesta 200 OK producto ID: {} eliminada con éxito", id);
         // Si el mensaje contiene exitosamente es un éxito
         if (resultado.contains("exitosamente")) {
             return new ResponseEntity<>(resultado, HttpStatus.OK);
         } else {
+            log.error("Respuesta 404 Not Found eliminacion fallida");
             return new ResponseEntity<>(resultado, HttpStatus.NOT_FOUND);
         }
     }

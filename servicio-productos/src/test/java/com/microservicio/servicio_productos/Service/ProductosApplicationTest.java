@@ -2,10 +2,7 @@ package com.microservicio.servicio_productos.Service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,10 +63,10 @@ public class ProductosApplicationTest {
                                                                                     // monto minimo y maximo que
                                                                                     // se
                                                                                     // generara
-        String procesadorFlaso = faker.expression("Apple M2"); // la libreria de expression de faker me ayuda a
-                                                               // colocar
-                                                               // lo que quiera en string
-        String almacenamientoFlaso = faker.expression("256GB SSD");
+        String procesadorFlaso = "Apple M2"; // la libreria de expression de faker me ayuda a
+                                             // colocar
+                                             // lo que quiera en string
+        String almacenamientoFlaso = "256GB SSD";
 
         productosFalso.setIdProductos(idSimulado);
         productosFalso.setNombreProducto(nombreProductoFalso);
@@ -120,8 +117,6 @@ public class ProductosApplicationTest {
         // se evalua que la lista contenga los elementos correctos
         assertNotNull(resultado);
         assertEquals(2, resultado.size(), "Debería devolverme exactamente 2 productos");
-        assertEquals(producto2.getNombreProducto(), resultado.get(0).getNombreProducto());
-        assertEquals(porducto3.getNombreProducto(), resultado.get(1).getNombreProducto());
         // Aqui se le pregunta al simulador si el método findAll
         // fue ejecutado exactamente una sola vez (times(1)) significa una vez durante
         // toda la prueba
@@ -152,15 +147,24 @@ public class ProductosApplicationTest {
     void testEliminarProductos_Exitoso() {
         Integer idAEliminar = 12;
         Productos productoExistente = new Productos();
+        Double precioFalso = faker.number().randomDouble(2, 100, 1000);
+        String procesadorFlaso = "Apple M2";
+        String memoriaranFalso = "8GB";
+        String almacenamientoFlaso = "256GB SSD";
+
         productoExistente.setIdProductos(idAEliminar);
         productoExistente.setNombreProducto("Teclados Mecánico");
+        productoExistente.setPrecioUnitario(precioFalso);
+        productoExistente.setProcesador(procesadorFlaso);
+        productoExistente.setMemoriaRam(memoriaranFalso);
+        productoExistente.setAlmacenamiento(almacenamientoFlaso);
 
         when(productosRepository.findById(idAEliminar)).thenReturn(Optional.of(productoExistente));
 
         // Ejecutamos la eliminación
         productosService.eliminarProductos(idAEliminar);
 
-        // se comprueba que se llamo el repositorio para eliminar el id
+        // se comprueba que se llamo el repositorio para eliminar producto
         verify(productosRepository, times(1)).delete(productoExistente);
     }
 

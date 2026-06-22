@@ -37,6 +37,7 @@ public class MarcaController {
             log.info("respuesta 204 no contenido no hay marcas registradas que mostrar");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encuentran marcas");
         }
+        log.info("respuesta 200 OK devuelve la lista de marcas");
         // si hay datos devuelve la lista con un estado 200 OK
         return new ResponseEntity<>(marcas, HttpStatus.OK);
     }
@@ -49,7 +50,7 @@ public class MarcaController {
             log.info("respuesta 201 creado marca registrada ID: {}", guardado.getIdMarca());
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
-            log.error("Respuesta 400 Bad request fallo de alguna validacion");
+            log.error("Respuesta 400 Bad request fallo de alguna validacion: {}", e.getMessage());
             return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
         }
     }
