@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.microservicio.servicio_usuarios.dto.ColaboradorDTO;
 import com.microservicio.servicio_usuarios.model.Colaborador;
 import com.microservicio.servicio_usuarios.services.ColaboradorService;
 
@@ -43,7 +44,7 @@ public class ColaboradorController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarColaborador(@PathVariable Integer id, @RequestBody Colaborador c) {
         try {
-            Colaborador colaboradorNuevo = colaboradorService.actualizarColaborador(id, c);
+            ColaboradorDTO colaboradorNuevo = colaboradorService.actualizarColaborador(id, c);
             return new ResponseEntity<>(colaboradorNuevo, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Colaborador no encontrado", HttpStatus.NOT_FOUND);

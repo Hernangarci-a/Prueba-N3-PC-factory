@@ -1,5 +1,6 @@
 package com.microservicio.servicio_usuarios.services;
 
+import com.microservicio.servicio_usuarios.repository.ComunaRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,16 +9,18 @@ import org.springframework.stereotype.Service;
 
 import com.microservicio.servicio_usuarios.dto.SucursalDTO;
 import com.microservicio.servicio_usuarios.model.Colaborador;
+import com.microservicio.servicio_usuarios.model.Comuna;
 import com.microservicio.servicio_usuarios.model.Sucursal;
 import com.microservicio.servicio_usuarios.repository.ColaboradorRepository;
 import com.microservicio.servicio_usuarios.repository.SucursalRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
 public class SucursalService {
+    @Autowired
+    private ComunaRepository comunaRepository;
 
     @Autowired
     private SucursalRepository sucursalRepository;
@@ -37,25 +40,23 @@ public class SucursalService {
         return convertirADTO(sucursal);
     }
 
-    public Sucursal buscarSucursal(Integer id) {
-        return sucursalRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("no se encontro sucural con ID: " + id));
-    }
-
-    public Sucursal guardarSucursal(Sucursal sucursal) {
+    public SucursalDTO guardarSucursal(SucursalDTO sucursal) {
+        Sucursal s = convertirSucursal(sucursal);
         if (sucursal.getNombreSucursal() == null || sucursal.getNombreSucursal().trim().isEmpty()) {
             throw new RuntimeException("el nombre no debe estar vacio");
         }
-        return sucursalRepository.save(sucursal);
+        Sucursal guardada = sucursalRepository.save(s);
+        return convertirADTO(guardada);
     }
 
-    public Sucursal añadirColaborador(Integer idSucursal, Integer idColaborador) {
+    public SucursalDTO añadirColaborador(Integer idSucursal, Integer idColaborador) {
         Sucursal sucursal = sucursalRepository.findById(idSucursal)
                 .orElseThrow(() -> new EntityNotFoundException("no se encontro"));
         Colaborador colaborador = colaboradorRepository.findById(idColaborador)
                 .orElseThrow(() -> new EntityNotFoundException("no se encontro"));
         sucursal.getColaboradores().add(colaborador);
-        return sucursalRepository.save(sucursal);
+        Sucursal guardada = sucursalRepository.save(sucursal);
+        return convertirADTO(guardada);
     }
 
     public String eliminarSucursal(Integer id) {
@@ -89,7 +90,7 @@ public class SucursalService {
         return dto;
     }
 
-    public Sucursal actualizarSucursal(Integer id, Sucursal sucursal) {
+    public SucursalDTO actualizarSucursal(Integer id, SucursalDTO sucursal) {
         Sucursal sucurs = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El producto no existe en el catalogo"));
         if (sucursal.getNombreSucursal() != null) {
@@ -100,10 +101,41 @@ public class SucursalService {
         }
 
         if (sucursal.getDireccionSucursal() != null) {
-            sucurs.setDireccionSucursal(sucurs.getDireccionSucursal());
+            sucurs.setDireccionSucursal(sucursal.getDireccionSucursal());
         }
+
         // guarda el original los cambios del original que ya existe
-        return sucursalRepository.save(sucurs);
+        Sucursal guardada = sucursalRepository.save(sucurs);
+        return convertirADTO(guardada);
+    }
+
+    public Sucursal convertirSucursal(SucursalDTO dto) {
+        Sucursal sucursal = new Sucursal();
+
+        sucursal.setIdSucursal(dto.getIdSucursal());
+        sucursal.setNombreSucursal(dto.getNombreSucursal());
+        sucursal.setDireccionSucursal(dto.getDireccionSucursal());
+
+        for (Comuna comuna : comunaRepository.findAll()) {
+            if (comuna.getNombre_comuna().equals(dto.getNombreComuna())) {
+                sucursal.setComuna(comuna);
+                break;
+            }
+        }
+
+        List<Colaborador> colaboradores = new ArrayList<>();
+
+        for (String nombre : dto.getNombresColaboradores()) {
+            for (Colaborador c : colaboradorRepository.findAll()) {
+                if (c.getNombreColaborador().equals(nombre)) {
+                    colaboradores.add(c);
+                    break;
+                }
+            }
+        }
+
+        sucursal.setColaboradores(colaboradores);
+        return sucursal;
     }
 
 }

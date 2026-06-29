@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.microservicio.servicio_usuarios.dto.SucursalDTO;
 import com.microservicio.servicio_usuarios.model.Sucursal;
 import com.microservicio.servicio_usuarios.services.SucursalService;
 
@@ -29,7 +30,7 @@ public class SucursalController {
     }
 
     @PostMapping
-    public ResponseEntity<?> agregarSucursal(@RequestBody Sucursal s) {
+    public ResponseEntity<?> agregarSucursal(@RequestBody SucursalDTO s) {
         try {
             return new ResponseEntity<>("Sucursal guardada correctamente" + sucursalService.guardarSucursal(s),
                     HttpStatus.CREATED);
@@ -39,9 +40,9 @@ public class SucursalController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarSucursal(@PathVariable Integer id, @RequestBody Sucursal s) {
+    public ResponseEntity<?> actualizarSucursal(@PathVariable Integer id, @RequestBody SucursalDTO s) {
         try {
-            Sucursal sucursalNueva = sucursalService.actualizarSucursal(id, s);
+            SucursalDTO sucursalNueva = sucursalService.actualizarSucursal(id, s);
             return new ResponseEntity<>(sucursalNueva, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Sucursal no encontrada", HttpStatus.NOT_FOUND);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.microservicio.servicio_usuarios.dto.ClienteDTO;
 import com.microservicio.servicio_usuarios.model.Cliente;
 import com.microservicio.servicio_usuarios.services.ClienteService;
 
@@ -30,7 +31,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<?> agregarCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<?> agregarCliente(@RequestBody ClienteDTO cliente) {
         try {
             return new ResponseEntity<>("Cliente guardado correctamente" + clienteService.guardarCliente(cliente),
                     HttpStatus.CREATED);
@@ -40,9 +41,10 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarCliente(@PathVariable Integer id, @RequestBody Cliente c) {
+    public ResponseEntity<?> actualizarCliente(@PathVariable Integer id, @RequestBody ClienteDTO c) {
         try {
-            Cliente clienteNuevo = clienteService.actualizarCliente(id, c);
+            Cliente cl = clienteService.convertirCliente(c);
+            ClienteDTO clienteNuevo = clienteService.actualizarCliente(id, cl);
             return new ResponseEntity<>(clienteNuevo, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Cliente no encontrado", HttpStatus.NOT_FOUND);
