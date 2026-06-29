@@ -32,25 +32,25 @@ public class Productos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idProductos")
+    @Column(name = "id_productos")
     private Integer idProductos;
 
     @NotBlank(message = "El nombre es obligatorio") // Validación de Java no puede ser nulo ni estar vacío
     @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres") // Límite de caracteres
-    @Column(name = "nombreProducto", nullable = false, length = 100) // Esto es lo mismo que NOT NULL y VARCHAR(25)
-                                                                     // en la base de
+    @Column(name = "nombre_producto", nullable = false, length = 100) // Esto es lo mismo que NOT NULL y VARCHAR(25)
+                                                                      // en la base de
     // datos
     private String nombreProducto;
 
     @NotNull(message = "El precio no puede estar vacio")
     @Positive(message = "El precio debe ser mayor a cero")
-    @Column(name = "precioUnitario", nullable = false)
+    @Column(name = "precio_unitario", nullable = false)
     private double precioUnitario;
 
     @Column(name = "procesador", length = 70, nullable = true)
     private String procesador;
 
-    @Column(name = "memoriaRam", length = 30, nullable = true)
+    @Column(name = "memoria_ram", length = 30, nullable = true)
     private String memoriaRam;
 
     @Column(name = "almacenamiento", length = 20, nullable = true)

@@ -2,8 +2,8 @@ CREATE TABLE categoria_productos (
     producto_id INT NOT NULL,
     categoria_id INT NOT NULL,
     PRIMARY KEY (producto_id, categoria_id),
-    FOREIGN KEY (producto_id) REFERENCES productos(idProductos),
-    FOREIGN KEY (categoria_id) REFERENCES categorias(idCategoria)
+    FOREIGN KEY (producto_id) REFERENCES productos(id_productos),
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id_categoria)
 );
 
 INSERT INTO categoria_productos (producto_id, categoria_id) VALUES 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import com.microservicio.servicio_productos.assemblers.MarcaModelAssembler;
 import com.microservicio.servicio_productos.dto.MarcaDTO;
 import com.microservicio.servicio_productos.model.Marca;
+import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.services.MarcaService;
 
 @RestController
@@ -49,13 +50,18 @@ public class MarcaControllerV2 {
 
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<EntityModel<MarcaDTO>> guardarMarcaDTO(@RequestBody MarcaDTO dto) {
+
         Marca entidad = new Marca();
         entidad.setIdMarca(dto.getIdMarca());
+
+        entidad.setIdMarca(dto.getIdMarca());
+        entidad.setNombreMarca(dto.getNombreMarca());
 
         Marca guardada = marcaService.guardarMarca(entidad);
 
         MarcaDTO nuevaMarcaDTO = new MarcaDTO();
         nuevaMarcaDTO.setIdMarca(guardada.getIdMarca());
+        nuevaMarcaDTO.setNombreMarca(guardada.getNombreMarca());
 
         return ResponseEntity
                 .created(linkTo(methodOn(MarcaControllerV2.class)

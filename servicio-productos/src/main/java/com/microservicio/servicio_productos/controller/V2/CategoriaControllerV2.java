@@ -53,6 +53,7 @@ public class CategoriaControllerV2 {
         // Convertimos DTO a Entidad pura para la V1
         Categoria entidad = new Categoria();
         entidad.setIdCategoria(dto.getIdCategoria());
+        entidad.setNombreCategoria(dto.getNombreCategoria());
 
         // Guardamos usando el servicio existente
         Categoria guardada = categoriaService.guardarCategoria(entidad);

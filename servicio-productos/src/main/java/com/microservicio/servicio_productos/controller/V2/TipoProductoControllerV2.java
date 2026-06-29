@@ -49,13 +49,17 @@ public class TipoProductoControllerV2 {
 
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<EntityModel<TipoProductoDTO>> guardarTipoProductoDTO(@RequestBody TipoProductoDTO dto) {
+
         TipoProducto entidad = new TipoProducto();
         entidad.setIdTipoProducto(dto.getId());
 
         TipoProducto guardado = tipoProductoService.guardarTipoProducto(entidad);
+        entidad.setIdTipoProducto(dto.getId());
+        entidad.setNombreTipoProducto(dto.getNombreTipoProducto());
 
         TipoProductoDTO nuevoTipoProductoDTO = new TipoProductoDTO();
         nuevoTipoProductoDTO.setId(guardado.getIdTipoProducto());
+        nuevoTipoProductoDTO.setNombreTipoProducto(guardado.getNombreTipoProducto());
 
         return ResponseEntity
                 .created(linkTo(methodOn(TipoProductoControllerV2.class)

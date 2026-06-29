@@ -84,24 +84,23 @@ public class ProductosService {
         } else {
             dto.setNombresCategorias(new ArrayList<>());
         }
-        /*
-         * try {
-         * VentasDTO ventasRecuperado = webClientBuilder.build().get()
-         * .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
-         * .retrieve()
-         * .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) //
-         * importante
-         * .bodyToMono(VentasDTO.class)
-         * .block();
-         * 
-         * dto.setVentas(ventasRecuperado);
-         * 
-         * } catch (Exception e) {
-         * dto.setVentas(null);
-         * }
-         * // y aca se entrega DTO ya armado con toda la información filtrada caja
-         * // terminada
-         */
+
+        try {
+            VentasDTO ventasRecuperado = webClientBuilder.build().get()
+                    .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) // importante
+                    .bodyToMono(VentasDTO.class)
+                    .block();
+
+            dto.setVentas(ventasRecuperado);
+
+        } catch (Exception e) {
+            dto.setVentas(null);
+        }
+        // y aca se entrega DTO ya armado con toda la información filtrada caja
+        // terminada
+
         return dto;
     }
 
