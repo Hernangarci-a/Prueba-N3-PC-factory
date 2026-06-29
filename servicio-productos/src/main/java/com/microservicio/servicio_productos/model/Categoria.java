@@ -26,7 +26,7 @@ public class Categoria {
 
     @Id // Define la llave primaria
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Indica que es AUTO_INCREMENT en MySQL
-    @Column(name = "id")
+    @Column(name = "id_categoria")
     private Integer idCategoria;
 
     @NotBlank(message = "El nombre de la categoria es obligatorio") // Validación de Java no puede ser nulo ni es vacío
@@ -35,5 +35,5 @@ public class Categoria {
     private String nombreCategoria;
 
     @ManyToMany(mappedBy = "categorias")
-    private List<Productos> Productos;
+    private List<Productos> productos;
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import com.microservicio.servicio_productos.dto.ProductosDTO;
@@ -12,6 +13,7 @@ import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.repository.ProductosRepository;
 
 import jakarta.transaction.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 @Transactional
@@ -45,10 +47,10 @@ public class ProductosService {
         ProductosDTO dto = new ProductosDTO();
         // copiamos los atributos simples (los que son texto o números directos)
         dto.setIdProducto(producto.getIdProductos());
-        dto.setNombre_producto(producto.getNombreProducto());
+        dto.setNombreProducto(producto.getNombreProducto());
         dto.setPrecioUnitario(producto.getPrecioUnitario());
         dto.setProcesador(producto.getProcesador());
-        dto.setMemoria_ram(producto.getMemoria_ram());
+        dto.setMemoriaRam(producto.getMemoriaRam());
         dto.setAlmacenamiento(producto.getAlmacenamiento());
 
         // manejo de Tipo de Producto relación manytoone
@@ -56,7 +58,7 @@ public class ProductosService {
         // osea Preguntamos si el producto tiene un tipo por ejemplo un Mouse
         if (producto.getTipoProducto() != null) {
             // si existe entramos al objeto TipoProducto y sacamos solo el nombre
-            dto.setNombreTipoProducto(producto.getTipoProducto().getNombreTipoProducto());
+            dto.setNombreTipoProducto(producto.getTipoProducto().getNombreTipoProducto().trim());
         } else {
             // si es nulo, ponemos un mensaje en lugar de un error
             dto.setNombreTipoProducto("producto no tiene un tipo definido");
@@ -65,7 +67,7 @@ public class ProductosService {
         // manejo de Marca relacion manytoone
         if (producto.getMarca() != null) {
             // saco el nombre de la marca desde el objeto relacionado
-            dto.setNombreMarca(producto.getMarca().getNombre_marca());
+            dto.setNombreMarca(producto.getMarca().getNombreMarca().trim());
         } else {
             dto.setNombreMarca("no hay marca para este producto");
         }
@@ -83,8 +85,22 @@ public class ProductosService {
             dto.setNombresCategorias(new ArrayList<>());
         }
 
+        try {
+            VentasDTO ventasRecuperado = webClientBuilder.build().get()
+                    .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) // importante
+                    .bodyToMono(VentasDTO.class)
+                    .block();
+
+            dto.setVentas(ventasRecuperado);
+
+        } catch (Exception e) {
+            dto.setVentas(null);
+        }
         // y aca se entrega DTO ya armado con toda la información filtrada caja
         // terminada
+
         return dto;
     }
 
@@ -135,10 +151,15 @@ public class ProductosService {
         // solo se cambia lo que el usuario mandó
         // si el nombre no viene vacío, actualizamos el original con el dato nuevo
         if (producto.getNombreProducto() != null) {
-            if (producto.getNombreProducto().trim().length() <= 25) {
-                throw new RuntimeException("El nuevo nombre es muy corto, debe tener al menos 25 caracteres.");
+            // Primero limpiamos el texto de espacios extras y lo guardamos en una variable
+            String nombreSinEspacios = producto.getNombreProducto().trim();
+            // se valida usando la variable que ya está sin espacios que debe ser mayor a 3
+            // caracteres
+            if (nombreSinEspacios.length() < 3) {
+                throw new RuntimeException("El nuevo nombre es muy corto, debe tener mas 3 caracteres");
             }
-            producto1.setNombreProducto(producto.getNombreProducto());
+            // aqui se guarda la variable sin sin espacios
+            producto1.setNombreProducto(nombreSinEspacios);
         }
         // manejo del primitivo 'double'
         // como no puede ser null verificamos que no sea 0.0 es double
@@ -151,8 +172,8 @@ public class ProductosService {
         if (producto.getProcesador() != null) {
             producto1.setProcesador(producto.getProcesador());
         }
-        if (producto.getMemoria_ram() != null) {
-            producto1.setMemoria_ram(producto.getMemoria_ram());
+        if (producto.getMemoriaRam() != null) {
+            producto1.setMemoriaRam(producto.getMemoriaRam());
         }
         if (producto.getAlmacenamiento() != null) {
             producto1.setAlmacenamiento(producto.getAlmacenamiento());
@@ -160,5 +181,4 @@ public class ProductosService {
         // guarda el original los cambios del original que ya existe
         return productosRepository.save(producto1);
     }
-
 }

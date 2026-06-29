@@ -24,3 +24,21 @@ spring:
               uri: http://127.0.0.1:8083
               predicates:
                 - Path=/api/v1/ventas/**
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    urls:
+      - name: Microservicio productos
+        url: /servicio-productos/api-docs
+      - name: Microservicio usuarios
+        url: /servicio-usuarios/api-docs
+      - name: Microservicio ventas
+        url: /servicio-ventas/api-docs
+  api-docs:
+    enabled: true
+    
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
