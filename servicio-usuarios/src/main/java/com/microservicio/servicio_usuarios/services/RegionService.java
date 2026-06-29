@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.microservicio.servicio_usuarios.dto.RegionDTO;
+import com.microservicio.servicio_usuarios.model.Comuna;
 import com.microservicio.servicio_usuarios.model.Region;
+import com.microservicio.servicio_usuarios.repository.ComunaRepository;
 import com.microservicio.servicio_usuarios.repository.RegionRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +21,9 @@ public class RegionService {
 
     @Autowired
     private RegionRepository regionRepository;
+
+    @Autowired
+    private ComunaRepository comunaRepository;
 
     public List<RegionDTO> obtenerTodos() {
         return regionRepository.findAll().stream()
@@ -32,11 +37,13 @@ public class RegionService {
         return convertirADTO(region);
     }
 
-    public Region guardarRegion(Region region) {
-        if (region.getNombre_region() == null || region.getNombre_region().trim().isEmpty()) {
+    public RegionDTO guardarRegion(RegionDTO region) {
+        if (region.getNombreRegion() == null || region.getNombreRegion().trim().isEmpty()) {
             throw new RuntimeException("el nombre no debe estar vacio");
         }
-        return regionRepository.save(region);
+        Region entidad = convertirRegion(region);
+        Region guardada = regionRepository.save(entidad);
+        return convertirADTO(guardada);
     }
 
     public String eliminarRegion(Integer id) {
@@ -49,6 +56,25 @@ public class RegionService {
         } catch (RuntimeException e) {
             return e.getMessage();
         }
+    }
+
+    public Region convertirRegion(RegionDTO dto) {
+        Region region = new Region();
+        region.setId_region(dto.getIdRegion());
+        region.setNombre_region(dto.getNombreRegion());
+
+        List<Comuna> comunas = new ArrayList<>();
+
+        for (String nombre : dto.getNombresComunas()) {
+            for (Comuna c : comunaRepository.findAll()) {
+                if (c.getNombre_comuna().equals(nombre)) {
+                    comunas.add(c);
+                    break;
+                }
+            }
+        }
+        region.setComunas(comunas);
+        return region;
     }
 
     private RegionDTO convertirADTO(Region region) {

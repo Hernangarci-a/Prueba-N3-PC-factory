@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.microservicio.servicio_usuarios.dto.ComunaDTO;
 import com.microservicio.servicio_usuarios.model.Comuna;
 import com.microservicio.servicio_usuarios.services.ComunaService;
 
@@ -30,7 +31,7 @@ public class ComunaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> agregarComuna(@RequestBody Comuna c) {
+    public ResponseEntity<?> agregarComuna(@RequestBody ComunaDTO c) {
         try {
             return new ResponseEntity<>("Comuna guardada correctamente" + comunaService.guardarComuna(c),
                     HttpStatus.CREATED);

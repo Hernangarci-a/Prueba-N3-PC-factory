@@ -38,10 +38,12 @@ public class Colaborador {
     private String rutColaborador;
 
     @Email(message = "Formato de correo inválido")
+    @NotBlank
     @Column(unique = true, length = 50)
     private String correo;
 
     @Column(length = 9)
+    @NotBlank
     private String telefono;
 
     @Column(nullable = false)

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.microservicio.servicio_usuarios.model.TipoColaborador;
+import com.microservicio.servicio_usuarios.dto.TipoColaboradorDTO;
 import com.microservicio.servicio_usuarios.services.TipoColaboradorService;
 
 @RestController()
@@ -31,9 +31,9 @@ public class TipoColaboradorController {
     }
 
     @PostMapping
-    public ResponseEntity<TipoColaborador> agregarTipoColaborador(@RequestBody TipoColaborador tipoColaborador) {
+    public ResponseEntity<TipoColaboradorDTO> agregarTipoColaborador(@RequestBody TipoColaboradorDTO tipoColaborador) {
         try {
-            TipoColaborador guardado = tipoColaboradorService.guardarTipoColaborador(tipoColaborador);
+            TipoColaboradorDTO guardado = tipoColaboradorService.guardarTipoColaborador(tipoColaborador);
             // retorna el producto guardado con el estado 201 creado
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -44,9 +44,9 @@ public class TipoColaboradorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarTipoColaborador(@PathVariable Integer id, @RequestBody TipoColaborador t) {
+    public ResponseEntity<?> actualizarTipoColaborador(@PathVariable Integer id, @RequestBody TipoColaboradorDTO t) {
         try {
-            TipoColaborador tipoColaboradorNuevo = tipoColaboradorService.actualizarTipoColaborador(id, t);
+            TipoColaboradorDTO tipoColaboradorNuevo = tipoColaboradorService.actualizarTipoColaborador(id, t);
             return new ResponseEntity<>(tipoColaboradorNuevo, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Tipo de colaborador no encontrado", HttpStatus.NOT_FOUND);

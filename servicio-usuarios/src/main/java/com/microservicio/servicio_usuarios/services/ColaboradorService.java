@@ -11,6 +11,8 @@ import com.microservicio.servicio_usuarios.model.Colaborador;
 import com.microservicio.servicio_usuarios.model.Sucursal;
 import com.microservicio.servicio_usuarios.model.TipoColaborador;
 import com.microservicio.servicio_usuarios.repository.ColaboradorRepository;
+import com.microservicio.servicio_usuarios.repository.SucursalRepository;
+import com.microservicio.servicio_usuarios.repository.TipoColaboradorRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -21,6 +23,12 @@ public class ColaboradorService {
 
     @Autowired
     private ColaboradorRepository colaboradorRepository;
+
+    @Autowired
+    private SucursalRepository sucursalRepository;
+
+    @Autowired
+    TipoColaboradorRepository tipoColaboradorRepository;
 
     public List<ColaboradorDTO> obtenerTodos() {
         return colaboradorRepository.findAll().stream()
@@ -34,28 +42,56 @@ public class ColaboradorService {
         return convertirADTO(colaborador);
     }
 
-    public Colaborador buscarColaborador(Integer id) {
-        return colaboradorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("no se encontro colaborador con ID: " + id));
-    }
-
-    public Colaborador guardarColaborador(Colaborador colaborador) {
+    public ColaboradorDTO guardarColaborador(Colaborador colaborador) {
         if (colaborador.getNombreColaborador() == null || colaborador.getNombreColaborador().trim().isEmpty()) {
-            throw new RuntimeException("el nombre no debe estra vacio");
+            throw new RuntimeException("el nombre no debe estar vacio");
         }
-        return colaboradorRepository.save(colaborador);
+        Colaborador guardado = colaboradorRepository.save(colaborador);
+        return convertirADTO(guardado);
     }
 
     public String eliminarColaborador(Integer id) {
         try {
-            Colaborador colaborador = colaboradorRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException(
-                            "no se puede eliminar al colaborador con ID " + id + " no existe."));
-            colaboradorRepository.delete(colaborador);
-            return "el colaborador " + colaborador.getNombreColaborador() + " se elimino";
+            colaboradorRepository.deleteById(id);
+            return "el colaborador se elimino";
         } catch (RuntimeException e) {
             return e.getMessage();
         }
+    }
+
+    public Colaborador convertirColaborador(ColaboradorDTO c) {
+        Colaborador colaborador = new Colaborador();
+
+        colaborador.setIdColaborador(c.getIdColaborador());
+        colaborador.setNombreColaborador(c.getNombreColaborador());
+        colaborador.setRutColaborador(c.getRutColaborador());
+        colaborador.setCorreo(c.getCorreo());
+        colaborador.setTelefono(c.getTelefono());
+        colaborador.setActivo(c.isActivo());
+        List<Sucursal> sucursales = new ArrayList<>();
+        for (String nombre : c.getNombresSucursales()) {
+            for (Sucursal s : sucursalRepository.findAll()) {
+                if (s.getNombreSucursal().equals(nombre)) {
+                    sucursales.add(s);
+                    break;
+                }
+            }
+        }
+
+        List<TipoColaborador> tipos = new ArrayList<>();
+
+        for (String nombre : c.getTiposColaborador()) {
+            for (TipoColaborador t : tipoColaboradorRepository.findAll()) {
+                if (t.getNombre().equals(nombre)) {
+                    tipos.add(t);
+                    break;
+                }
+            }
+        }
+
+        colaborador.setSucursales(sucursales);
+        colaborador.setTipocolaborador(tipos);
+        return colaborador;
     }
 
     private ColaboradorDTO convertirADTO(Colaborador colaborador) {
@@ -84,18 +120,18 @@ public class ColaboradorService {
         return dto;
     }
 
-    public Colaborador actualizarColaborador(Integer id, Colaborador colaborador) {
-        // 1. Buscamos el cliente existente
+    public ColaboradorDTO actualizarColaborador(Integer id, Colaborador colaborador) {
+        // Buscamos el cliente existente
         Colaborador colabor = colaboradorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("EL colaborador no encontrado con id: " + id));
         if (colaborador.getNombreColaborador() != null) {
-            if (colaborador.getNombreColaborador().trim().length() <= 25) {
-                throw new RuntimeException("El nuevo nombre es muy corto, debe tener al menos 25 caracteres.");
+            if (colaborador.getNombreColaborador().trim().length() <= 10) {
+                throw new RuntimeException("El nuevo nombre es muy corto, debe tener al menos 10 caracteres.");
             }
 
             colabor.setNombreColaborador(colaborador.getNombreColaborador());
         }
-        if (colaborador.getNombreColaborador() != null) {
+        if (colaborador.getRutColaborador() != null) {
             colabor.setRutColaborador(colaborador.getRutColaborador());
         }
         if (colaborador.getCorreo() != null) {
@@ -104,11 +140,9 @@ public class ColaboradorService {
         if (colaborador.getTelefono() != null) {
             colabor.setTelefono(colaborador.getTelefono());
         }
-        if (colaborador.getTelefono() != null) {
-            colabor.setTelefono(colaborador.getTelefono());
-        }
-
-        return colaboradorRepository.save(colaborador);
+        colaboradorRepository.save(colabor);
+        ColaboradorDTO c = convertirADTO(colabor);
+        return c;
     }
 
 }

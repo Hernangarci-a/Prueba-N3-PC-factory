@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.microservicio.servicio_usuarios.dto.RegionDTO;
 import com.microservicio.servicio_usuarios.model.Region;
 import com.microservicio.servicio_usuarios.services.RegionService;
 
@@ -28,7 +29,7 @@ public class RegionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> agregarRegion(@RequestBody Region r) {
+    public ResponseEntity<?> agregarRegion(@RequestBody RegionDTO r) {
         try {
             return new ResponseEntity<>("Region guardada correctamente" + regionService.guardarRegion(r),
                     HttpStatus.CREATED);
