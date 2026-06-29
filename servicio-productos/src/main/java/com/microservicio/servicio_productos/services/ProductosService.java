@@ -84,7 +84,7 @@ public class ProductosService {
         } else {
             dto.setNombresCategorias(new ArrayList<>());
         }
-
+        /*
         try {
             VentasDTO ventasRecuperado = webClientBuilder.build().get()
                     .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
@@ -97,7 +97,7 @@ public class ProductosService {
 
         } catch (Exception e) {
             dto.setVentas(null);
-        }
+        }*/
         // y aca se entrega DTO ya armado con toda la información filtrada caja
         // terminada
 
