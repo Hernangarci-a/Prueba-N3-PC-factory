@@ -23,10 +23,11 @@ public class TipoProducto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tipos_productos")
     private Integer idTipoProducto;
 
     @NotBlank(message = "El nombre del tipo es obligatorio")
-    @Column(nullable = false, length = 50)
+    @Column(name = "nombre_tipo_producto", nullable = false, length = 50)
     private String nombreTipoProducto;
 
     @OneToMany(mappedBy = "tipoProducto")

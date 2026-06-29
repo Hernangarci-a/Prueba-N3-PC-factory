@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class MarcaService {
+
     @Autowired
     private MarcaRepository marcaRepository;
 
@@ -31,7 +32,7 @@ public class MarcaService {
     }
 
     public Marca guardarMarca(Marca marca) {
-        if (marca.getNombre_marca() == null || marca.getNombre_marca().trim().isEmpty()) {
+        if (marca.getNombreMarca() == null || marca.getNombreMarca().trim().isEmpty()) {
             throw new RuntimeException("el nombre no debe estar vacio");
         }
         return marcaRepository.save(marca);
@@ -42,8 +43,17 @@ public class MarcaService {
             Marca marca = marcaRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException(
                             "no se puede eliminar la marca con el ID " + id + " no existe."));
+
+            // condicional que valida si tiene productos asociados para que no lo pueda
+            // borrar por logica un podructo no se puede eliminar si tiene un producto
+            // asociado
+            if (marca.getProductos() != null && !marca.getProductos().isEmpty()) {
+                throw new RuntimeException("No se puede eliminar la marca '" + marca.getNombreMarca()
+                        + "' porque tiene productos asociados en el catálogo.");
+            }
+
             marcaRepository.delete(marca);
-            return "la marca " + marca.getNombre_marca() + " se elimino";
+            return "la marca " + marca.getNombreMarca() + " se elimino";
         } catch (RuntimeException e) {
             return e.getMessage();
         }
@@ -51,10 +61,9 @@ public class MarcaService {
 
     private MarcaDTO convertirADTO(Marca marca) {
         MarcaDTO dto = new MarcaDTO();
-        dto.setIdMarca(marca.getId());
-        dto.setNombreMarca(marca.getNombre_marca());
+        dto.setIdMarca(marca.getIdMarca());
+        dto.setNombreMarca(marca.getNombreMarca());
 
-        // ahí tira error porque yo no tengo el service,repository y dto de productos
         if (marca.getProductos() != null) {
             dto.setNombresProductos(marca.getProductos().stream()
                     .map(Productos::getNombreProducto)

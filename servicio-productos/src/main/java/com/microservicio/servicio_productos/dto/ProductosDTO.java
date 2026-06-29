@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class ProductosDTO {
     private Integer idProducto;
-    private String nombre_producto;
+    private String nombreProducto;
     private Double precioUnitario;
     private String procesador;
-    private String memoria_ram;
+    private String memoriaRam;
     private String almacenamiento;
     private String nombreMarca;
     private String nombreTipoProducto;

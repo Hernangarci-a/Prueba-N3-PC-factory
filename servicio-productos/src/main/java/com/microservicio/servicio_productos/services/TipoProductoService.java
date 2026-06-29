@@ -79,7 +79,7 @@ public class TipoProductoService {
         return dto;
     }
 
-    public String eliminarProductos(Integer id) {
+    public String eliminarTipoProdcucto(Integer id) {
         // se usa try porque borrar algo es una proceso delicado puede fallar
         try {
             TipoProducto tipoProducto = tipoProductoRepository.findById(id).orElseThrow(

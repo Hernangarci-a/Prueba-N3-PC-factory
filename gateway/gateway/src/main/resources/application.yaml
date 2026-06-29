@@ -4,40 +4,26 @@ server:
 spring:
   application:
     name: gateway
+
   cloud:
     gateway:
       server:
         webmvc:
           routes:
             - id: servicio-productos-service
-              uri: lb://servicio-productos
+              uri: http://127.0.0.1:8081
               predicates:
                 - Path=/api/v1/productos/**
 
             - id: servicio-usuario-service
-              uri: lb://servicio-usuarios
+              uri: http://127.0.0.1:8082
               predicates:
                 - Path=/api/v1/cliente/**
-
+            
             - id: servicio-ventas-service
-              uri: lb://servicio-ventas
+              uri: http://127.0.0.1:8083
               predicates:
                 - Path=/api/v1/ventas/**
-
-            - id: swagger-productos
-              uri: lb://servicio-productos
-              predicates:
-                - Path=/servicio-productos/api-docs
-
-            - id: swagger-usuarios
-              uri: lb://servicio-usuarios
-              predicates:
-                - Path=/servicio-usuarios/api-docs
-
-            - id: swagger-ventas
-              uri: lb://servicio-ventas
-              predicates:
-                - Path=/servicio-ventas/api-docs
 
 springdoc:
   swagger-ui:
@@ -51,9 +37,7 @@ springdoc:
         url: /servicio-ventas/api-docs
   api-docs:
     enabled: true
-
-
-
+    
 eureka:
   client:
     service-url:
