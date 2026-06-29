@@ -11,4 +11,5 @@ public class VentasDTO {
     private String nombreTipoPago;
     private String nombreTipoVenta;
     private String nombreTipoDespacho;
+    private ClienteExternoDTO cliente;
 }

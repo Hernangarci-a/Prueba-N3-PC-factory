@@ -1,72 +1,74 @@
 package com.microservicio.servicio_ventas.services;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.microservicio.servicio_ventas.dto.TipoDespachoDTO;
 import com.microservicio.servicio_ventas.model.TipoDespacho;
 import com.microservicio.servicio_ventas.repository.TipoDespachoRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+
+
 
 @Service
 @Transactional
 public class TipoDespachoService {
+
     @Autowired
     private TipoDespachoRepository tipoDespachoRepository;
 
-    public List<TipoDespachoDTO> obtenerTodos() {
+    public List<TipoDespacho> findAll(){
+        return tipoDespachoRepository.findAll();
+    }
+
+    public List<TipoDespachoDTO> obtenerTodos(){
         return tipoDespachoRepository.findAll().stream()
                 .map(this::convertirADTO)
                 .toList();
     }
 
-    // No entiendo que hacer con este service
-
-    public TipoDespacho guardarTipoDespacho(TipoDespacho tipoDespacho) {
+    public TipoDespacho guardarTipoDespacho(TipoDespacho tipoDespacho){
         if (tipoDespacho.getNombreTipoDespacho() == null || tipoDespacho.getNombreTipoDespacho().trim().isEmpty()) {
             throw new RuntimeException("Error el nombre no puede estar vacio");
         }
         return tipoDespachoRepository.save(tipoDespacho);
     }
 
-    public TipoDespachoDTO buscarPorId(Integer id) {
-        TipoDespacho tipo = tipoDespachoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("no se ha encontrado con ID: " + id));
-        return convertirADTO(tipo);
+    public TipoDespacho findById(Integer id){
+        return tipoDespachoRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("no se ha encontrado con ID: " + id));
     }
 
-    private TipoDespachoDTO convertirADTO(TipoDespacho tipo) {
+    public TipoDespachoDTO buscarPorId(Integer id){
+        return convertirADTO(findById(id));
+    }
+
+    private TipoDespachoDTO convertirADTO(TipoDespacho tipo){
         TipoDespachoDTO dto = new TipoDespachoDTO();
         dto.setIdTipoDespacho(tipo.getIdTipoDespacho());
         dto.setNombreTipoDespacho(tipo.getNombreTipoDespacho());
         return dto;
     }
 
-    public TipoDespacho actualizarTipoDespacho(Integer id, TipoDespacho tipoDespacho) {
-        TipoDespacho TipoDespa = tipoDespachoRepository.findById(id)
+    public TipoDespacho actualizarTipoDespacho(Integer id, TipoDespacho tipoDespacho){
+        TipoDespacho tipoDespa = tipoDespachoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El despacho no existe "));
-        if (tipoDespacho.getNombreTipoDespacho() != null) {
-            if (tipoDespacho.getNombreTipoDespacho().trim().isEmpty()) {
+        if (tipoDespacho.getNombreTipoDespacho() != null){
+            if (tipoDespacho.getNombreTipoDespacho().trim().isEmpty()){
                 throw new RuntimeException("El nuevo nombre no puede estar vacio");
             }
-            TipoDespa.setNombreTipoDespacho(tipoDespacho.getNombreTipoDespacho());
+            tipoDespa.setNombreTipoDespacho(tipoDespacho.getNombreTipoDespacho());
         }
-        return tipoDespachoRepository.save(TipoDespa);
+        return tipoDespachoRepository.save(tipoDespa);
     }
 
-    public String eliminartipoDespacho(Integer id) {
-        // se usa try porque borrar algo es una proceso delicado puede fallar
-        try {
+    public String eliminartipoDespacho(Integer id){
+        try{
             TipoDespacho tipoDespacho = tipoDespachoRepository.findById(id).orElseThrow(
-                    () -> new RuntimeException("¡Imposible eliminar! El producto con ID " + id + " no existe."));
+                    () -> new RuntimeException("Imposible eliminar El producto con ID " + id + " no existe"));
             tipoDespachoRepository.delete(tipoDespacho);
             return "El tipo colaborador a sido eliminado";
-
-        } catch (RuntimeException e) {
+        } catch (RuntimeException e){
             return e.getMessage();
         }
     }
