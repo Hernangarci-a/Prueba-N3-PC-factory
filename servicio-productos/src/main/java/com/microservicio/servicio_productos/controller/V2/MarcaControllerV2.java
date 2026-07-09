@@ -20,7 +20,7 @@ import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.services.MarcaService;
 
 @RestController
-@RequestMapping("/api/v2/marca")
+@RequestMapping("/api/v2/marcas")
 public class MarcaControllerV2 {
 
     @Autowired

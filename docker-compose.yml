@@ -1,0 +1,106 @@
+version: '3.8'
+
+
+services:
+ mariadb-db:
+   image: mariadb:10.11
+   container_name: mariadb-db
+   ports:
+     - "3306:3306"
+   environment:
+     MYSQL_ROOT_PASSWORD: ""
+     MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+     MYSQL_DATABASE: db_pcfactory_dev
+   networks:
+     - network-pcfactory
+   healthcheck:
+     test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root"]
+     interval: 10s
+     timeout: 5s
+     retries: 20
+
+
+ eureka-server:
+   build: ./eureka
+   container_name: eureka-server
+   ports:
+     - "8761:8761"
+   networks:
+     - network-pcfactory
+   healthcheck:
+     test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+     interval: 15s
+     timeout: 5s
+     retries: 10
+     start_period: 30s
+
+
+ api-gateway:
+   build: ./gateway
+   container_name: api-gateway
+   ports:
+     - "8080:8080"
+   environment:
+     EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+     SPRING_PROFILES_ACTIVE: dev
+   networks:
+     - network-pcfactory
+   depends_on:
+     eureka-server:
+       condition: service_healthy
+
+
+ servicio-productos:
+    build: ./servicio-productos
+    container_name: microservicio_productos
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      DATABASE_HOST: mariadb-db
+      GATEWAY_URL: http://localhost:8080
+    networks:
+      - network-pcfactory
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+
+ servicio-usuarios:
+    build: ./servicio-usuarios
+    container_name: microservicio_usuarios
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      DATABASE_HOST: mariadb-db
+      GATEWAY_URL: http://localhost:8080
+    networks:
+      - network-pcfactory
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+
+ servicio-ventas:
+    build: ./servicio-ventas
+    container_name: microservicio_ventas
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      DATABASE_HOST: mariadb-db
+      GATEWAY_URL: http://localhost:8080
+    networks:
+      - network-pcfactory
+    depends_on:
+      mariadb-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+
+networks:
+ network-pcfactory:
+   driver: bridge

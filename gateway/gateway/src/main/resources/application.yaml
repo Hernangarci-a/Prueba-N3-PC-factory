@@ -1,44 +1,58 @@
 server:
   port: 8080
+  forward-headers-strategy: framework
 
 spring:
   application:
     name: gateway
-
   cloud:
     gateway:
       server:
         webmvc:
-          routes:
-            - id: servicio-productos-service
-              uri: http://127.0.0.1:8081
-              predicates:
-                - Path=/api/v1/productos/**
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origin-patterns: "*"
+                allowed-methods: "*"
+                allowed-headers: "*"
+                exposed-headers: "*"
+                allow-credentials: false
+                max-age: 3600
 
-            - id: servicio-usuario-service
-              uri: http://127.0.0.1:8082
-              predicates:
-                - Path=/api/v1/cliente/**
-            
-            - id: servicio-ventas-service
-              uri: http://127.0.0.1:8083
-              predicates:
-                - Path=/api/v1/ventas/**
+      routes:
+        - id: servicio-productos
+          uri: lb://servicio-productos
+          predicates:
+            - Path=/api/v1/productos/**, /api/v2/productos/**, /productos/api-docs/**
+
+        - id: servicio-usuarios
+          uri: lb://servicio-usuarios
+          predicates:
+            - Path=/api/v1/usuarios/**, /api/v2/usuarios/**, /usuarios/api-docs/**
+
+        - id: servicio-ventas
+          uri: lb://servicio-ventas
+          predicates:
+            - Path=/api/v1/ventas/**, /api/v2/ventas/**, /ventas/api-docs/**
 
 springdoc:
   swagger-ui:
     path: /swagger-ui/index.html
     urls:
-      - name: Microservicio productos
-        url: /servicio-productos/api-docs
-      - name: Microservicio usuarios
-        url: /servicio-usuarios/api-docs
-      - name: Microservicio ventas
-        url: /servicio-ventas/api-docs
+      - name: Microservicio Productos
+        url: /productos/api-docs
+      - name: Microservicio Usuarios
+        url: /usuarios/api-docs
+      - name: Microservicio Ventas
+        url: /ventas/api-docs
+    disable-swagger-default-url: true
+    display-request-duration: true
   api-docs:
     enabled: true
-    
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: false

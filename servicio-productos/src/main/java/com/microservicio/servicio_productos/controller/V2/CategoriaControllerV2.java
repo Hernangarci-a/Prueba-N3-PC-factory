@@ -19,7 +19,7 @@ import com.microservicio.servicio_productos.model.Categoria;
 import com.microservicio.servicio_productos.services.CategoriaService;
 
 @RestController
-@RequestMapping("/api/v2/categoria")
+@RequestMapping("/api/v2/categorias")
 public class CategoriaControllerV2 {
 
     @Autowired

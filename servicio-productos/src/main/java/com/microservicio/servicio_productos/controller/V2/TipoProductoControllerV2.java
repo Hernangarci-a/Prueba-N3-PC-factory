@@ -19,7 +19,7 @@ import com.microservicio.servicio_productos.model.TipoProducto;
 import com.microservicio.servicio_productos.services.TipoProductoService;
 
 @RestController
-@RequestMapping("/api/v2/tipoproducto")
+@RequestMapping("/api/v2/tipoproductos")
 public class TipoProductoControllerV2 {
 
     @Autowired
