@@ -85,19 +85,21 @@ public class ProductosService {
             dto.setNombresCategorias(new ArrayList<>());
         }
         /*
-        try {
-            VentasDTO ventasRecuperado = webClientBuilder.build().get()
-                    .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) // importante
-                    .bodyToMono(VentasDTO.class)
-                    .block();
-
-            dto.setVentas(ventasRecuperado);
-
-        } catch (Exception e) {
-            dto.setVentas(null);
-        }*/
+         * try {
+         * VentasDTO ventasRecuperado = webClientBuilder.build().get()
+         * .uri("http://localhost:8083/api/v1/ventas/{id}" + ventas.getId())
+         * .retrieve()
+         * .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) //
+         * importante
+         * .bodyToMono(VentasDTO.class)
+         * .block();
+         * 
+         * dto.setVentas(ventasRecuperado);
+         * 
+         * } catch (Exception e) {
+         * dto.setVentas(null);
+         * }
+         */
         // y aca se entrega DTO ya armado con toda la información filtrada caja
         // terminada
 
@@ -122,6 +124,31 @@ public class ProductosService {
         // si pasa las validaciones guarda
         return productosRepository.save(producto);
 
+    }
+
+    public ProductosDTO guardarProductosDTO(ProductosDTO productosdto) {
+        // Creamos la Entidad que la V1 del servicio necesita
+        Productos entidad = new Productos();
+        entidad.setIdProductos(productosdto.getIdProducto());
+        entidad.setNombreProducto(productosdto.getNombreProducto());
+        entidad.setPrecioUnitario(productosdto.getPrecioUnitario());
+        entidad.setProcesador(productosdto.getProcesador());
+        entidad.setMemoriaRam(productosdto.getMemoriaRam());
+        entidad.setAlmacenamiento(productosdto.getAlmacenamiento());
+
+        // Guardamos la entidad usando el método existente de tu servicio
+        Productos productoGuardado = productosRepository.save(entidad);
+
+        // Convertimos la entidad guardada de vuelta a DTO para HATEOAS
+        ProductosDTO nuevoProductoDto = new ProductosDTO();
+        nuevoProductoDto.setIdProducto(productoGuardado.getIdProductos());
+        nuevoProductoDto.setNombreProducto(productoGuardado.getNombreProducto());
+        nuevoProductoDto.setPrecioUnitario(productoGuardado.getPrecioUnitario());
+        nuevoProductoDto.setProcesador(productoGuardado.getProcesador());
+        nuevoProductoDto.setMemoriaRam(productoGuardado.getMemoriaRam());
+        nuevoProductoDto.setAlmacenamiento(productoGuardado.getAlmacenamiento());
+
+        return nuevoProductoDto;
     }
 
     // para eliminar un producto
@@ -181,4 +208,5 @@ public class ProductosService {
         // guarda el original los cambios del original que ya existe
         return productosRepository.save(producto1);
     }
+
 }

@@ -21,11 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.microservicio.servicio_productos.assemblers.ProductosModelAssemblers;
 import com.microservicio.servicio_productos.dto.ProductosDTO;
-import com.microservicio.servicio_productos.model.Marca;
 import com.microservicio.servicio_productos.model.Productos;
-import com.microservicio.servicio_productos.model.TipoProducto;
-import com.microservicio.servicio_productos.repository.MarcaRepository;
 import com.microservicio.servicio_productos.services.ProductosService;
+
+import jakarta.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -65,33 +64,16 @@ public class ProductosControllerV2 {
     }
 
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
-    public ResponseEntity<EntityModel<ProductosDTO>> guardarProductoDTO(@RequestBody ProductosDTO productosdto) {
-
-        // Creamos la Entidad que la V1 del servicio necesita
-        Productos entidad = new Productos();
-        entidad.setIdProductos(productosdto.getIdProducto());
-        entidad.setNombreProducto(productosdto.getNombreProducto());
-        entidad.setPrecioUnitario(productosdto.getPrecioUnitario());
-        entidad.setProcesador(productosdto.getProcesador());
-        entidad.setMemoriaRam(productosdto.getMemoriaRam());
-        entidad.setAlmacenamiento(productosdto.getAlmacenamiento());
-
-        // Guardamos la entidad usando el método existente de tu servicio
-        Productos productoGuardado = productosService.guardarProductos(entidad);
-
-        // Convertimos la entidad guardada de vuelta a DTO para HATEOAS
-        ProductosDTO nuevoProductoDto = new ProductosDTO();
-        nuevoProductoDto.setIdProducto(productoGuardado.getIdProductos());
-        nuevoProductoDto.setNombreProducto(productoGuardado.getNombreProducto());
-        nuevoProductoDto.setPrecioUnitario(productoGuardado.getPrecioUnitario());
-        nuevoProductoDto.setProcesador(productoGuardado.getProcesador());
-        nuevoProductoDto.setMemoriaRam(productoGuardado.getMemoriaRam());
-        nuevoProductoDto.setAlmacenamiento(productoGuardado.getAlmacenamiento());
-
-        return ResponseEntity
-                .created(linkTo(methodOn(ProductosControllerV2.class)
-                        .getProductosByCodigo(Integer.valueOf(nuevoProductoDto.getIdProducto()))).toUri())
-                .body(assembler.toModel(nuevoProductoDto));
+    public ResponseEntity<EntityModel<ProductosDTO>> guardarProductoDTO(@Valid @RequestBody ProductosDTO productosdto) {
+        try {
+            ProductosDTO newProductosDTO = productosService.guardarProductosDTO(productosdto);
+            return ResponseEntity
+                    .created(linkTo(methodOn(ProductosControllerV2.class)
+                            .getProductosByCodigo(Integer.valueOf(newProductosDTO.getIdProducto()))).toUri())
+                    .body(assembler.toModel(newProductosDTO));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)

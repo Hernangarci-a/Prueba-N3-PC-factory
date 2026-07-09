@@ -73,4 +73,20 @@ public class MarcaService {
         }
         return dto;
     }
+
+    public Marca actualizMarca(Integer id, Marca marca) {
+        Marca marca1 = marcaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("la marca no existe "));
+        if (marca1.getNombreMarca() != null) {
+            String nombreSinEspacios = marca1.getNombreMarca().trim();
+            if (nombreSinEspacios.length() < 3) {
+                throw new RuntimeException("El nuevo nombre es muy corto, debe tener mas 3 caracteres");
+            }
+            // aqui se guarda la variable sin sin espacios
+            marca1.setNombreMarca(nombreSinEspacios);
+        }
+        // guarda el original los cambios del original que ya existe
+        return marcaRepository.save(marca1);
+    }
+
 }

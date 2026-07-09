@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.microservicio.servicio_productos.dto.MarcaDTO;
 import com.microservicio.servicio_productos.model.Marca;
+import com.microservicio.servicio_productos.model.Productos;
 import com.microservicio.servicio_productos.services.MarcaService;
 
 import jakarta.validation.Valid;
@@ -52,6 +54,20 @@ public class MarcaController {
         } catch (Exception e) {
             log.error("Respuesta 400 Bad request fallo de alguna validacion: {}", e.getMessage());
             return new ResponseEntity<>("ERROR validaciones no respetadas", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Marca> actualizarMarca(@PathVariable Integer id, @RequestBody Marca marca) {
+        log.info("Metodo PUT editado o actualizado de datos de productos");
+        try {
+            Marca nuevoProducto = marcaService.actualizMarca(id, marca);
+            log.info("Respuesta 200 OK solisitud de editado a marcas exitosamente");
+            return new ResponseEntity<>(nuevoProducto, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.error("Respuesta 400 bad request fallo de alguna validacion no se pudo editar marcas: {}",
+                    e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
